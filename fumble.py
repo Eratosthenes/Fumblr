@@ -1,6 +1,6 @@
 # usage (in separate terminals): 
 # $gunicorn fumble:app
-# $python3 fumble
+# $python3 fumble.py
 
 import ast
 import random
@@ -12,6 +12,7 @@ from fumbler import Fumbler
 from multiprocessing import Pool
 from collections import defaultdict
 from cachetools import LRUCache
+import os
 
 # location dictionary is stored as an lru cache to prevent memory from overflowing
 loc_d = LRUCache(maxsize=10) # a dictionary with buckets that represent time/loc segments
@@ -52,6 +53,7 @@ class Resource(object):
         global match_d
         for user in friend_d[d['userId']]:
             if user in loc_d[h_data]:
+                print('match found!')
                 match_d[d['userId']].append(user)
                 match_d[user].append(d['userId'])
 
@@ -72,8 +74,8 @@ class Resource(object):
 
     # round these numbers to whatever you like in order to define a match
     def granularize(self, lat, lon, ts):
-        lat = "{0:.2f}".format(round(lat, 2))
-        lon = "{0:.2f}".format(round(lon, 2))
+        lat = "{0:.1f}".format(round(lat, 2))
+        lon = "{0:.1f}".format(round(lon, 2))
         ts = "{0:.0f}".format(round(time.time(), -2))
         return hash(' '.join([lat, lon, ts]))
 
@@ -90,6 +92,11 @@ if __name__=='__main__':
     for i in range(3,6):
         users.append(Fumbler(i))
 
-    # simulate roaming
-    p = Pool(len(users))
-    p.map(Fumbler.roam, users)
+    try: # simulate roaming
+        p = Pool(len(users))
+        p.map(Fumbler.roam, users)
+    except: # show results of GET requests
+        for i in range(1, 6):
+            os.system('http :8000 userId=={}'.format(i))
+
+        pdb.set_trace()

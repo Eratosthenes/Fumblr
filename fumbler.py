@@ -27,18 +27,16 @@ class Fumbler():
         return self.lat, self.lon
 
     def generate_loc(self):
-        lat = round(random.randint(0, 90) + random.random(), 4)
-        lon = round(random.randint(0, 180) + random.random(), 4)
+        lat = round(random.randint(0, 1) + random.random(), 4)
+        lon = round(random.randint(0, 1) + random.random(), 4)
         return lat, lon
 
     def change_loc(self):
         """
         Move by up to one degree (within bounds)
         """
-        self.lat += random.uniform(-1,1)
-        self.lon += random.uniform(-1,1)
-        self.lat = min(max(0, self.lat), 90) 
-        self.lon = min(max(0, self.lat), 180) 
+        self.lat = (self.lat + random.uniform(-1,1)) % 1
+        self.lon = (self.lon + random.uniform(-1,1)) % 1
 
     # in the real world we probably wouldn't send everything all to the same machine/port
     def publish_loc(self):
