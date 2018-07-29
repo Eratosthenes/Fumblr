@@ -18,17 +18,17 @@ class Fumbler():
         """
         Randomly roam around
         """
-        while True:
+        for _ in range(10):
             self.publish_loc()
             self.change_loc()
-            time.sleep(1)
+            time.sleep(random.random())
 
     def get_loc(self):
         return self.lat, self.lon
 
     def generate_loc(self):
-        lat = round(random.randint(0, 1) + random.random(), 4)
-        lon = round(random.randint(0, 1) + random.random(), 4)
+        lat = round(random.random(), 4)
+        lon = round(random.random(), 4)
         return lat, lon
 
     def change_loc(self):

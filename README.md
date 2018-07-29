@@ -1,17 +1,29 @@
 ## About
 
 This is an API for an app that lets friends know when they cross paths. 
-The simulated mobile client sends the users lat/long to a post endpoint once a second, all day long. 
+
+The simulated mobile client sends the user's lat/long to a post endpoint at
+random intervals of less than 1 second. 
+
 The user can open the app at any point and see the people they've crossed paths with.
 
 ## Usage
 
-Open a terminal and set up the server:
+Open up two separate terminals and go into a virtualenv with:
 
-    $gunicorn fumble:app
+    $ pipenv shell
+
+In one terminal, set up the server:
+
+    (Fumblr-t3LBUAy-) bash-3.2$ gunicorn fumble:app
     
-To simulate users, open a separate terminal and run:
+In the other terminal, run the app to simulate users roaming for ~10 seconds:
 
-    $python3 fumble.py
+    (Fumblr-t3LBUAy-) bash-3.2$ python3 fumble.py
 
-Then watch the server in action as the simulated users roam around. 
+Watch the server in action as the simulated users roam around, then view the
+results of GET requests for each user. 
+
+Exit the virtualenvs with: 
+
+    (Fumblr-t3LBUAy-) bash-3.2$ exit

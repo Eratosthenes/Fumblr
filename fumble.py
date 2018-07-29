@@ -1,7 +1,3 @@
-# usage (in separate terminals): 
-# $gunicorn fumble:app
-# $python3 fumble.py
-
 import ast
 import random
 import falcon
@@ -58,11 +54,15 @@ class Resource(object):
                 match_d[user].append(d['userId'])
 
         # batch writing for the match dictionary (with a very low threshold)
-        # TODO: load/combine with previous match data so that we're not overwriting
+        # load/combine with previous match data so that we're not overwriting
         if len(match_d) > 1:
             print(match_d)
+            with open('match_d.p', 'rb') as handle:
+                old_match_d = pickle.load(handle)
+
+            combo_d = {k: v for d in [match_d, old_match_d] for k, v in d.items()}
             with open('match_d.p', 'wb') as handle:
-                pickle.dump(match_d, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(combo_d, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
             match_d.clear() # technically not necessary since it's not referenced elsewhere
             match_d = defaultdict(list)
@@ -84,19 +84,20 @@ app.add_route('/', Resource())
 
 if __name__=='__main__':
     # create a matching pair of users
+    n_users = 10
     users = []
     users.append(Fumbler(1, 10.01, 20.0))
     users.append(Fumbler(2, 10.007, 20.003))
 
     # create some non-matching users
-    for i in range(3,6):
+    for i in range(3, n_users + 1):
         users.append(Fumbler(i))
 
-    try: # simulate roaming
-        p = Pool(len(users))
-        p.map(Fumbler.roam, users)
-    except: # show results of GET requests
-        for i in range(1, 6):
-            os.system('http :8000 userId=={}'.format(i))
+    # simulate roaming
+    p = Pool(len(users))
+    p.map(Fumbler.roam, users)
 
-        pdb.set_trace()
+    # get matches for each user after roaming
+    for i in range(1, n_users + 1):
+        os.system('http :8000 userId=={}'.format(i))
+
